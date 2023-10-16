@@ -354,7 +354,7 @@ where
     /// battery charging current
     ///
     /// Return unit: amps
-    pub fn get_battery_charge_current(&mut self) -> Result <f32, E> {
+    pub fn get_battery_charge_current(&mut self) -> Result<f32, E> {
         let v = self.get_13(0x7a)?;
         Ok(v as f32 * 0.0005)
     }
@@ -362,7 +362,7 @@ where
     /// battery discharge current
     ///
     /// Return unit: amps
-    pub fn get_battery_discharge_current(&mut self) -> Result <f32, E> {
+    pub fn get_battery_discharge_current(&mut self) -> Result<f32, E> {
         let v = self.get_13(0x7c)?;
         Ok(v as f32 * 0.0005)
     }
