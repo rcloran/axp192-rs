@@ -1,0 +1,18 @@
+[package]
+name = "axp192"
+description = "A driver for the AXP192 power management IC"
+version = "0.1.0"
+authors = ["Russell Cloran <rcloran@gmail.com>"]
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/rcloran/axp192-rs"
+categories = ["embedded", "hardware-support", "no-std::no-alloc"]
+
+[dependencies]
+embedded-hal = "0.2.7"
+
+[dev-dependencies]
+esp-backtrace = { version = "0.8.0", features = ["esp32", "panic-handler", "exception-handler", "print-uart"] }
+esp-println = { version = "0.6", features = ["esp32"] }
+esp32-hal = "0.15.0"
