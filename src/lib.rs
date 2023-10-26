@@ -33,6 +33,26 @@ pub struct Axp192<I2C> {
     i2c: I2C,
 }
 
+/// GPIO0 function setting
+///
+/// Used with [`Axp192::set_gpio0_mode`]
+pub enum GpioMode0 {
+    /// 000: NMOS Open drain output
+    NmosOpenDrainOutput = 0b000,
+    /// 001: Universal input function
+    UniversalInput = 0b001,
+    /// 010:PWM1 Output, high level is VINT ,Do not Can be less than 100K Pull-down resistor
+    LowNoiseLdo = 0b010,
+    /// 011: Keep
+    Keep = 0b011,
+    /// 100: ADC enter
+    AdcEnter = 0b100,
+    /// 101: Low output
+    LowOutput = 0b101,
+    /// 11X: Floating
+    Floating = 0b110,
+}
+
 /// GPIO1 and GPIO2 function setting
 ///
 /// Used with [`Axp192::set_gpio1_mode`] and [`Axp192::set_gpio2_mode`]
@@ -196,6 +216,16 @@ where
         self.get_flag(0x00, 0b1000_0000)
     }
 
+    /// EXTEN Switch status
+    pub fn get_exten_on(&mut self) -> Result<bool, E> {
+        self.get_flag(0x10, 0b0000_0100)
+    }
+
+    /// EXTEN Switch control
+    pub fn set_exten_on(&mut self, state: bool) -> Result<(), E> {
+        self.set_flag(0x10, 0b0000_0100, state)
+    }
+
     /// DC-DC1 Switch status
     pub fn get_dcdc1_on(&mut self) -> Result<bool, E> {
         self.get_flag(0x12, 0b0000_0001)
@@ -284,6 +314,14 @@ where
         let v = Self::voltage_value(voltage, 1800, 3300, 100) & 0x0f;
         let existing = self.get_8(0x28)?;
         self.set_8(0x28, (existing & 0x0f) | (v << 4))
+    }
+
+    /// VBUS-IPSOUT channel management
+    /// VBUS When available VBUS-IPSOUT Path selection control signal
+    /// false: by N_VBUSEN pin Decide whether to open this channel
+    /// true: :VBUS-IPSOUT Access can be selected to open, regardless of N_VBUSEN status
+    pub fn set_ipsout_always(&mut self, state: bool) -> Result<(), E> {
+        self.set_flag(0x30, 0b1000_0000, state)
     }
 
     /// PEK key parameter setting
@@ -405,6 +443,19 @@ where
     /// battery voltage ADC Enable
     pub fn set_battery_voltage_adc_enable(&mut self, state: bool) -> Result<(), E> {
         self.set_flag(0x82, 0b1000_0000, state)
+    }
+
+    /// GPIO0 Pin function setting
+    pub fn set_gpio0_mode(&mut self, mode: GpioMode0) -> Result<(), E> {
+        self.set_8(0x90, mode as u8)
+    }
+
+    /// Output voltage setting when GPIO0 is in LDO mode
+    ///
+    /// The input is clamped to between 1800mV and 3300mV, in steps of 100mV
+    pub fn set_gpio0_ldo_voltage(&mut self, voltage: u16) -> Result<(), E> {
+        let v = Self::voltage_value(voltage, 1800, 3300, 100) << 4;
+        self.set_8(0x91, v)
     }
 
     /// GPIO1 function setting
