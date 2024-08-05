@@ -322,6 +322,19 @@ where
         self.get_flag(0x80, 0b0000_0001)
     }
 
+    /// PMU comm config
+    /// Default 0x30
+    /// 7:6 : reserved
+    /// 5   : Interal off-discharge enabled for dcdc & LDO & Switch (Default 1)
+    /// 4   : reserved
+    /// 3   : PWROK pin pull low to restart system (default 0)
+    /// 2   : PWRON 16s to shut the PMIC enable (default 0)
+    /// 1   : Restart the SoC system POWOFF/ POWON and reset the related registers, 0 = normal, 1 = reset (default 0)
+    /// 0   : Soft PWROFF, 0 = nomal, 1 = PWROFF config (default 0)
+    pub fn set_pmu_conf(&mut self, config: u8) -> Result<(), E> {
+        self.set_8(0x10, config)
+    }
+
     /// DC-DC1 Switch control
     ///
     /// ***Warning!*** This output is often connected to the microcontroller that you are
