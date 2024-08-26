@@ -3,10 +3,11 @@
 
 use axp192;
 use embedded_hal as eh;
-use esp_hal::{
-    clock::ClockControl, system::SystemControl, gpio::Io, i2c::I2C, peripherals::Peripherals, prelude::*, delay::Delay,
-};
 use esp_backtrace as _;
+use esp_hal::{
+    clock::ClockControl, delay::Delay, gpio::Io, i2c::I2C, peripherals::Peripherals, prelude::*,
+    system::SystemControl,
+};
 use esp_println::println;
 
 #[entry]
@@ -24,7 +25,7 @@ fn main() -> ! {
         io.pins.gpio22,
         400u32.kHz(),
         &clocks,
-        None
+        None,
     );
 
     let mut axp = axp192::Axp192::new(i2c);
