@@ -3,28 +3,29 @@
 
 use axp192;
 use embedded_hal as eh;
-use esp32_hal::{
-    clock::ClockControl, gpio::IO, i2c::I2C, peripherals::Peripherals, prelude::*, Delay,
-};
 use esp_backtrace as _;
+use esp_hal::{
+    clock::ClockControl, delay::Delay, gpio::Io, i2c::I2C, peripherals::Peripherals, prelude::*,
+    system::SystemControl,
+};
 use esp_println::println;
 
 #[entry]
 fn main() -> ! {
     let peripherals = Peripherals::take();
-    let mut system = peripherals.DPORT.split();
+    let system = SystemControl::new(peripherals.SYSTEM);
     let clocks = ClockControl::boot_defaults(system.clock_control).freeze();
     let mut delay = Delay::new(&clocks);
 
-    let io = IO::new(peripherals.GPIO, peripherals.IO_MUX);
+    let io = Io::new(peripherals.GPIO, peripherals.IO_MUX);
 
     let i2c = I2C::new(
         peripherals.I2C0,
         io.pins.gpio21,
         io.pins.gpio22,
         400u32.kHz(),
-        &mut system.peripheral_clock_control,
         &clocks,
+        None,
     );
 
     let mut axp = axp192::Axp192::new(i2c);
@@ -41,15 +42,13 @@ fn main() -> ! {
         println!("USB {usb_v}v @ {usb_a}A");
         println!("Internal temperature: {temp}°C");
 
-        delay.delay_ms(1000u32);
+        delay.delay_millis(1000u32);
     }
 }
 
 fn m5sc2_init<I2C, E>(axp: &mut axp192::Axp192<I2C>, delay: &mut Delay) -> Result<(), E>
 where
-    I2C: eh::blocking::i2c::Read<Error = E>
-        + eh::blocking::i2c::Write<Error = E>
-        + eh::blocking::i2c::WriteRead<Error = E>,
+    I2C: eh::i2c::I2c<Error = E>,
 {
     // Default setup for M5Stack Core 2
     axp.set_dcdc1_voltage(3350)?; // Voltage to provide to the microcontroller (this one!)
@@ -89,10 +88,10 @@ where
     // Actually reset the LCD
     axp.set_gpio4_output(false)?;
     axp.set_ldo3_on(true)?; // Buzz the vibration motor while intializing ¯\_(ツ)_/¯
-    delay.delay_ms(100u32);
+    delay.delay_millis(100u32);
     axp.set_gpio4_output(true)?;
     axp.set_ldo3_on(false)?;
-    delay.delay_ms(100u32);
+    delay.delay_millis(100u32);
 
     Ok(())
 }
