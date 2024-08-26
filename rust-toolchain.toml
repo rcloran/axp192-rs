@@ -1,3 +1,2 @@
 [toolchain]
 channel = "esp"
-targets = ["extensa-esp32-none-elf"]
