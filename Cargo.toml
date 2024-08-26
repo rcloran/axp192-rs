@@ -8,7 +8,7 @@ license = "MIT"
 name = "axp192"
 readme = "README.md"
 repository = "https://github.com/rcloran/axp192-rs"
-version = "0.1.2"
+version = "0.2.0"
 
 [dependencies]
 embedded-hal = "1.0.0"
