@@ -1,7 +1,7 @@
 [package]
 authors = ["Russell Cloran <rcloran@gmail.com>"]
 categories = ["embedded", "hardware-support", "no-std::no-alloc"]
-description = "A driver for the AXP192 power management IC"
+description = "A driver for the AXP192/2101 power management IC"
 edition = "2021"
 keywords = ["embedded", "embedded-hal-driver", "no-alloc", "no-std"]
 license = "MIT"
@@ -14,9 +14,15 @@ version = "0.2.0"
 embedded-hal = "1.0.0"
 
 [dev-dependencies]
-esp-backtrace = { version = "0.13.0", features = ["esp32", "panic-handler", "exception-handler", "println"] }
+
+esp-backtrace = { version = "0.13.0", features = [
+    "esp32",
+    "panic-handler",
+    "exception-handler",
+    "println",
+] }
 esp-println = { version = "0.10.0", features = ["esp32"] }
-esp-hal = { version="0.19.0", features=["esp32"] }
+esp-hal = { version = "0.19.0", features = ["esp32"] }
 
 [lib]
 test = false
